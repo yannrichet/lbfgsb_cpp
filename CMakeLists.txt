@@ -8,16 +8,26 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio")
     set(LBFGSB_CMAKE_GENERATOR "Unix Makefiles")
 else ()
     set(LBFGSB_CMAKE_GENERATOR "${CMAKE_GENERATOR}")
-    set(LBFGSB_CMAKE_GENERATOR "Unix Makefiles") # DEBUG
 endif ()
 
+set(HEADERS "include/${PROJECT_NAME}/lbfgsb.hpp")
+add_library(${PROJECT_NAME} INTERFACE)
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+set(EMBED_CUSTOM_BLAS ON)
+#if (TARGET blas)
+#    set(EMBED_CUSTOM_BLAS OFF)
+#    # target_link_libraries(${PROJECT_NAME} INTERFACE blas)
+#endif ()
+
 # Did not use FetchContent since generated CMakeLists.txt doesn't support a different generator for the external project
+set(lbfgsb_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Lbfgsb.3.0")
 set(lbfgsb_BINARY_DIR "${CMAKE_BINARY_DIR}/lbfgsb-build")
 set(lbfgsb_INSTALL_DIR "${CMAKE_BINARY_DIR}/lbfgsb-installed")
 
 # subbuild for lbfgsb
 set(lbfgsb_VIRTUAL_PROJECT "${CMAKE_CURRENT_BINARY_DIR}/lbfgsb-virtual-project")
-configure_file("${CMAKE_SOURCE_DIR}/cmake/ExternalFortranProject.cmake.in"
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/ExternalFortranProject.cmake.in"
         "${lbfgsb_VIRTUAL_PROJECT}/CMakeLists.txt")
 execute_process(
         COMMAND ${CMAKE_COMMAND}
@@ -25,6 +35,7 @@ execute_process(
         -DFortran_LINK_FLAGS="${Fortran_LINK_FLAGS}"
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${lbfgsb_INSTALL_DIR}
+        -DEMBED_CUSTOM_BLAS=${EMBED_CUSTOM_BLAS}
         .
         RESULT_VARIABLE result
         OUTPUT_VARIABLE capturedOutput
@@ -51,12 +62,7 @@ endif ()
 set(lbfgsb_DIR "${lbfgsb_INSTALL_DIR}/lib/cmake/lbfgsb")
 find_package(lbfgsb CONFIG REQUIRED)
 
-set(HEADERS "include/${PROJECT_NAME}/lbfgsb.hpp")
-
-add_library(${PROJECT_NAME} INTERFACE ${HEADERS})
-add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-
-#target_link_libraries(${PROJECT_NAME} lbfgsb::lbfgsb)
+target_link_libraries(${PROJECT_NAME} INTERFACE lbfgsb::lbfgsb)
 
 target_include_directories(
         ${PROJECT_NAME} INTERFACE
@@ -65,13 +71,10 @@ target_include_directories(
 )
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 
-if (TARGET blas)
-    target_link_libraries(${PROJECT_NAME} PUBLIC blas)
-endif ()
-
 if (CMAKE_BUILD_TYPE MATCHES "Release")
+    # Nothing to do
 else ()
-    #    target_compile_options(${PROJECT_NAME} PRIVATE -fcheck=all)
+    # target_compile_options(${PROJECT_NAME} PRIVATE -fcheck=all)
 endif ()
 
 if (BUILD_EXAMPLE)
@@ -99,3 +102,6 @@ install(
         NAMESPACE ${PROJECT_NAME}::
         DESTINATION lib/cmake/${PROJECT_NAME}
 )
+
+install(DIRECTORY
+        ${lbfgsb_INSTALL_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX})

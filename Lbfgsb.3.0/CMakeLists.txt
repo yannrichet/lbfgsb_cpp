@@ -1,14 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 
+option(EMBED_CUSTOM_BLAS "Embed blas primitive if not available" ON)
+
 message(STATUS "Using Fortran compiler: ${CMAKE_Fortran_COMPILER}")
 message(STATUS "Using Fortran library flags: ${Fortran_LINK_FLAGS}")
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
     message(FATAL_ERROR "This project cannot be build using '${CMAKE_GENERATOR}'")
 else()
-    if (NOT CMAKE_GENERATOR STREQUAL "Unix Makefiles")
-        message(FATAL_ERROR "This project cannot be build using '${CMAKE_GENERATOR}'")
-    endif()
     message(STATUS "Using CMake generator: ${CMAKE_GENERATOR}")
 endif()
 
@@ -22,9 +21,9 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif ()
 
 set(FORTRAN_SRC
-    lbfgsb.F # capital to enable pre-processing with compilation directives
-    linpack.f
-    timer.f
+    lbfgsb.F # capital .F to enable pre-processing with compilation directives
+    linpack.F
+    timer.F
 )
 set(HEADERS "include/${PROJECT_NAME}/lbfgsb.h")
 
@@ -33,19 +32,25 @@ if (NOT WIN32)
 #    target_compile_options(${PROJECT_NAME} LBFGSB_WRITE)
 endif()
 
-if (NOT TARGET blas)
-    set(FORTRAN_SRC ${FORTRAN_SRC}
-            blas.f # Now uses external blas
-            )
-    message(WARNING "lbfgsb_cpp will use local implementation of blas functions")
+if (EMBED_CUSTOM_BLAS)
+    list(APPEND FORTRAN_SRC blas.F)
+    message(WARNING "lbfgsb will use local implementation of blas functions")
 endif()
 
-add_library(${PROJECT_NAME} ${FORTRAN_SRC} ${HEADERS})
+add_library(${PROJECT_NAME} STATIC ${FORTRAN_SRC})
+
+if (EMBED_CUSTOM_BLAS)
+    # to avoid collision with outer blas
+    # short rename to avoid truncate code interpretation after column #72
+    target_compile_definitions(${PROJECT_NAME} PRIVATE dcopy=Wcopy)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE dscal=Wscal)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE daxpy=Waxpy)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE dnrm2=Wnrm2)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ddot=Wdot)
+endif()
 
 set(FLIBS_LIST ${Fortran_LINK_FLAGS})
 separate_arguments(FLIBS_LIST)
-
-#target_link_libraries(${PROJECT_NAME} "-Wl,--whole-archive")
 
 execute_process(COMMAND ${CMAKE_Fortran_COMPILER} -print-search-dirs
         RESULT_VARIABLE HINT_RESULT
