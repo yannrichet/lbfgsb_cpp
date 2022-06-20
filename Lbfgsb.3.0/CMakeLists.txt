@@ -1,4 +1,17 @@
 cmake_minimum_required(VERSION 3.15)
+
+message(STATUS "Using Fortran compiler: ${CMAKE_Fortran_COMPILER}")
+message(STATUS "Using Fortran library flags: ${Fortran_LINK_FLAGS}")
+
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+    message(FATAL_ERROR "This project cannot be build using '${CMAKE_GENERATOR}'")
+else()
+    if (NOT CMAKE_GENERATOR STREQUAL "Unix Makefiles")
+        message(FATAL_ERROR "This project cannot be build using '${CMAKE_GENERATOR}'")
+    endif()
+    message(STATUS "Using CMake generator: ${CMAKE_GENERATOR}")
+endif()
+
 project(lbfgsb Fortran)
 
 # Prevent from root system installation
@@ -7,9 +20,6 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     # Force update for sub-libraries (to follow current installation directive)
     set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE CACHE BOOL "Installation prefix has been set" FORCE)
 endif ()
-
-message(STATUS "Using Fortran compiler: ${CMAKE_Fortran_COMPILER}")
-message(STATUS "Using Fortran library flags: ${Fortran_LINK_FLAGS}")
 
 set(FORTRAN_SRC
     lbfgsb.F # capital to enable pre-processing with compilation directives

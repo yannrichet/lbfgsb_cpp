@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION ${CMAKE_VERSION})
+project(lbfgsb-build NONE)
+include(ExternalProject)
+ExternalProject_Add(lbfgsb-build
+                    SOURCE_DIR          "@CMAKE_SOURCE_DIR@/Lbfgsb.3.0"
+                    BINARY_DIR          "@lbfgsb_BINARY_DIR@"
+                    CMAKE_GENERATOR     "@LBFGSB_CMAKE_GENERATOR@"     
+                    CMAKE_ARGS
+                        "-DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}"
+                        "-DFortran_LINK_FLAGS=${Fortran_LINK_FLAGS}"
+                        "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+                        "-DCMAKE_INSTALL_PREFIX=@lbfgsb_INSTALL_DIR@"
+)
