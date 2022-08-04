@@ -17,7 +17,7 @@ jobs:
             os: ubuntu-20.04
             mode: Debug
           - name: "macOS Debug"
-            os: macOS-10.15
+            os: macOS-11
             mode: Debug
           - name: "Windows Debug"
             os: windows-2019
