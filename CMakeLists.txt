@@ -48,7 +48,7 @@ STRING(REPLACE "\n" "\n-- " capturedOutput ${capturedOutput}) # show sub cmake w
 if (result)
     message("${capturedOutput}")
     message(FATAL_ERROR "CMake step for lbfgsb-build failed: ${result}")
-else (LBFGSB_SHOW_BUILD)
+elseif (LBFGSB_SHOW_BUILD)
     message(STATUS "${capturedOutput}")
 endif ()
 execute_process(
@@ -62,7 +62,7 @@ STRING(REPLACE "\n" "\n-- " capturedOutput ${capturedOutput}) # show sub cmake w
 if (result)
     message("${capturedOutput}")
     message(FATAL_ERROR "Build step for lbfgsb-build failed: ${result}")
-else (LBFGSB_SHOW_BUILD)
+elseif (LBFGSB_SHOW_BUILD)
     message(STATUS "${capturedOutput}")
 endif ()
 # End of subbuild for lbfgsb
