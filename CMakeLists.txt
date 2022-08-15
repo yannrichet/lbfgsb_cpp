@@ -28,7 +28,9 @@ set(lbfgsb_INSTALL_DIR "${CMAKE_BINARY_DIR}/lbfgsb-installed")
 # subbuild for lbfgsb
 set(lbfgsb_VIRTUAL_PROJECT "${CMAKE_CURRENT_BINARY_DIR}/lbfgsb-virtual-project")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/ExternalFortranProject.cmake.in"
-        "${lbfgsb_VIRTUAL_PROJECT}/CMakeLists.txt")
+        "${lbfgsb_VIRTUAL_PROJECT}/CMakeLists.txt" @ONLY)
+
+
 execute_process(
         COMMAND ${CMAKE_COMMAND}
         -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
@@ -42,9 +44,12 @@ execute_process(
         ERROR_VARIABLE capturedOutput
         WORKING_DIRECTORY "${lbfgsb_VIRTUAL_PROJECT}"
 )
+STRING(REPLACE "\n" "\n-- " capturedOutput ${capturedOutput}) # show sub cmake with additional -- markers
 if (result)
     message("${capturedOutput}")
     message(FATAL_ERROR "CMake step for lbfgsb-build failed: ${result}")
+else (LBFGSB_SHOW_BUILD)
+    message(STATUS "${capturedOutput}")
 endif ()
 execute_process(
         COMMAND ${CMAKE_COMMAND} --build .
@@ -53,9 +58,12 @@ execute_process(
         ERROR_VARIABLE capturedOutput
         WORKING_DIRECTORY "${lbfgsb_VIRTUAL_PROJECT}"
 )
+STRING(REPLACE "\n" "\n-- " capturedOutput ${capturedOutput}) # show sub cmake with additional -- markers
 if (result)
     message("${capturedOutput}")
     message(FATAL_ERROR "Build step for lbfgsb-build failed: ${result}")
+else (LBFGSB_SHOW_BUILD)
+    message(STATUS "${capturedOutput}")
 endif ()
 # End of subbuild for lbfgsb
 
