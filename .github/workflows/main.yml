@@ -15,7 +15,7 @@ jobs:
         include:
           - name: "Linux Debug"
             os: ubuntu-20.04
-            mode: Debug
+            mode: Debug 
           - name: "macOS Debug"
             os: macOS-11
             mode: Debug
@@ -52,6 +52,14 @@ jobs:
           else
             echo "No make command found"
           fi
+      
+      - name: Install clang 17
+        shell: bash
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 17
+          sudo apt install -y clang-17
 
       - name: Configure
         shell: bash
@@ -64,6 +72,9 @@ jobs:
                 -DBUILD_EXAMPLE=ON \
                 -DCMAKE_BUILD_TYPE="${MODE}" \
                 ..
+        env:
+         CC:   clang-17
+         CXX:  clang++-17
 
       - name: Compile
         shell: bash
