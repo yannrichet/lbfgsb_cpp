@@ -26,11 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-        # To provide an easy to find fortran compiler
-      - uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: '4.2'
-
       - name: Define local variables
         shell: bash
         run: |
@@ -39,13 +34,6 @@ jobs:
       - name: Explain current config
         shell: bash
         run: |
-          if ( command -v gfortran >/dev/null 2>&1 ); then
-            echo "Fortran config: $(command -v gfortran)"
-            gfortran --version 2>&1 | sed 's/^/  /'
-          else
-            echo "No Fortran compiler command found"
-          fi
-          
           if ( command -v make >/dev/null 2>&1 ); then
             echo "Make config: $(command -v make)"
             make --version 2>&1 | sed 's/^/  /'
@@ -59,8 +47,6 @@ jobs:
           set -x
           mkdir build && cd build
           cmake \
-                -DCMAKE_Fortran_COMPILER="$(R CMD config FC | awk '{ print $1 }')" \
-                -DFortran_LINK_FLAGS="$(R CMD config FLIBS)" \
                 -DBUILD_EXAMPLE=ON \
                 -DCMAKE_BUILD_TYPE="${MODE}" \
                 ..
