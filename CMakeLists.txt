@@ -23,12 +23,6 @@ set(EMBED_CUSTOM_BLAS ON)
 #    # target_link_libraries(${PROJECT_NAME} INTERFACE blas)
 #endif ()
 
-# Did not use FetchContent since generated CMakeLists.txt doesn't support a different generator for the external project
-set(lbfgsb_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Lbfgsb.3.0")
-set(lbfgsb_BINARY_DIR "${CMAKE_BINARY_DIR}/lbfgsb-build")
-set(lbfgsb_INSTALL_DIR "${CMAKE_BINARY_DIR}/lbfgsb-installed")
-set(lbfgsb_DIR "${lbfgsb_INSTALL_DIR}/lib/cmake/lbfgsb")
-
 target_include_directories(
         ${PROJECT_NAME} INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -67,6 +61,3 @@ install(
         NAMESPACE ${PROJECT_NAME}::
         DESTINATION lib/cmake/${PROJECT_NAME}
 )
-
-install(DIRECTORY
-        ${lbfgsb_INSTALL_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX})
