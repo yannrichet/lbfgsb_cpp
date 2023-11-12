@@ -23,6 +23,16 @@ set(EMBED_CUSTOM_BLAS ON)
 #    # target_link_libraries(${PROJECT_NAME} INTERFACE blas)
 #endif ()
 
+if (EMBED_CUSTOM_BLAS)
+    # to avoid collision with outer blas
+    # short rename to avoid truncate code interpretation after column #72
+    target_compile_definitions(${PROJECT_NAME} PRIVATE dcopy_=Wcopy_)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE dscal_=Wscal_)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE daxpy_=Waxpy_)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE dnrm2_=Wnrm2_)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ddot_=Wdot_)
+endif ()
+
 target_include_directories(
         ${PROJECT_NAME} INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -51,7 +61,7 @@ install(TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT devel
-        )
+)
 
 install(FILES ${HEADERS} DESTINATION "include/${PROJECT_NAME}")
 
