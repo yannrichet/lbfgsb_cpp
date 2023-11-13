@@ -167,32 +167,35 @@ typedef struct Namelist Namelist;
 
 /* procedure parameter types for -A and -C++ */
 
-#define F2C_proc_par_types 1
-#ifdef __cplusplus
-typedef int /* Unknown procedure type */ (*U_fp)(...);
-typedef shortint (*J_fp)(...);
-typedef integer (*I_fp)(...);
-typedef real (*R_fp)(...);
-typedef doublereal (*D_fp)(...), (*E_fp)(...);
-typedef /* Complex */ VOID (*C_fp)(...);
-typedef /* Double Complex */ VOID (*Z_fp)(...);
-typedef logical (*L_fp)(...);
-typedef shortlogical (*K_fp)(...);
-typedef /* Character */ VOID (*H_fp)(...);
-typedef /* Subroutine */ int (*S_fp)(...);
-#else
-typedef int /* Unknown procedure type */ (*U_fp)();
-typedef shortint (*J_fp)();
-typedef integer (*I_fp)();
-typedef real (*R_fp)();
-typedef doublereal (*D_fp)(), (*E_fp)();
-typedef /* Complex */ VOID (*C_fp)();
-typedef /* Double Complex */ VOID (*Z_fp)();
-typedef logical (*L_fp)();
-typedef shortlogical (*K_fp)();
-typedef /* Character */ VOID (*H_fp)();
-typedef /* Subroutine */ int (*S_fp)();
-#endif
+// Disabled to fix the follow compiler warning (required to submit to CRAN)
+//   warning: function declaration isn't a prototype [-Wstrict-prototypes]
+
+//#define F2C_proc_par_types 1
+//#ifdef __cplusplus
+//typedef int /* Unknown procedure type */ (*U_fp)(...);
+//typedef shortint (*J_fp)(...);
+//typedef integer (*I_fp)(...);
+//typedef real (*R_fp)(...);
+//typedef doublereal (*D_fp)(...), (*E_fp)(...);
+//typedef /* Complex */ VOID (*C_fp)(...);
+//typedef /* Double Complex */ VOID (*Z_fp)(...);
+//typedef logical (*L_fp)(...);
+//typedef shortlogical (*K_fp)(...);
+//typedef /* Character */ VOID (*H_fp)(...);
+//typedef /* Subroutine */ int (*S_fp)(...);
+//#else
+//typedef int /* Unknown procedure type */ (*U_fp)();
+//typedef shortint (*J_fp)();
+//typedef integer (*I_fp)();
+//typedef real (*R_fp)();
+//typedef doublereal (*D_fp)(), (*E_fp)();
+//typedef /* Complex */ VOID (*C_fp)();
+//typedef /* Double Complex */ VOID (*Z_fp)();
+//typedef logical (*L_fp)();
+//typedef shortlogical (*K_fp)();
+//typedef /* Character */ VOID (*H_fp)();
+//typedef /* Subroutine */ int (*S_fp)();
+//#endif
 /* E_fp is for real functions when -R is not specified */
 typedef VOID C_f;	/* complex function */
 typedef VOID H_f;	/* character function */
