@@ -6,11 +6,18 @@
 #include <cstring>
 #include <string>
 #include <chrono>
+#include <cstdint>
 
+// Forward declarations from f2c
+#ifdef f2c_i2
+typedef int16_t ftnlen;
+#else
+typedef int32_t ftnlen;
+#endif
 
 namespace lbfgsb {
     extern "C" {
-        void setulb_(
+        int setulb_(
             const int* n, const int* m, double* x,
             const double* l, const double* u, const int* nbd,
             double* f, double* g,
@@ -18,7 +25,7 @@ namespace lbfgsb {
             double* wa, int* iwa, char* task,
             const int* iprint, char* csave,
             bool* lsave, int* isave, double* dsave,
-            std::size_t len_task, std::size_t len_csave
+            ftnlen len_task, ftnlen len_csave
         );
     }
 
