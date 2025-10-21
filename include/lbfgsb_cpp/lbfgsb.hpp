@@ -8,7 +8,11 @@
 #include <chrono>
 #include <cstdint>
 
-// Forward declarations from f2c
+// Type definitions from f2c - must match local_f2c.h
+typedef int32_t integer;
+typedef double doublereal;
+typedef int32_t logical;
+
 #ifdef f2c_i2
 typedef int16_t ftnlen;
 #else
@@ -18,14 +22,14 @@ typedef int32_t ftnlen;
 namespace lbfgsb {
     extern "C" {
         int setulb_(
-            const int* n, const int* m, double* x,
-            const double* l, const double* u, const int* nbd,
-            double* f, double* g,
-            const double* factr, const double* pgtol,
-            double* wa, int* iwa, char* task,
-            const int* iprint, char* csave,
-            bool* lsave, int* isave, double* dsave,
-            ftnlen len_task, ftnlen len_csave
+            integer* n, integer* m, doublereal* x,
+            doublereal* l, doublereal* u, integer* nbd,
+            doublereal* f, doublereal* g,
+            doublereal* factr, doublereal* pgtol,
+            doublereal* wa, integer* iwa, char* task,
+            integer* iprint, char* csave,
+            logical* lsave, integer* isave, doublereal* dsave,
+            ftnlen task_len, ftnlen csave_len
         );
     }
 
@@ -44,12 +48,26 @@ namespace lbfgsb {
         double factr, double pgtol,
         double* wa, int* iwa, char* task,
         int iprint, char* csave,
-        bool* lsave, int* isave, double* dsave
+        logical* lsave, int* isave, double* dsave
     ) {
+        integer n_ = n;
+        integer m_ = m;
+        integer iprint_ = iprint;
         setulb_(
-            &n, &m, x, lb, ub, bound_type, fval, grad, &factr, &pgtol,
-            wa, iwa, task, &iprint, csave, lsave,
-            isave, dsave, N_TASK, N_CSAVE
+            &n_, &m_, reinterpret_cast<doublereal*>(x),
+            reinterpret_cast<doublereal*>(const_cast<double*>(lb)),
+            reinterpret_cast<doublereal*>(const_cast<double*>(ub)),
+            reinterpret_cast<integer*>(const_cast<int*>(bound_type)),
+            reinterpret_cast<doublereal*>(fval),
+            reinterpret_cast<doublereal*>(grad),
+            reinterpret_cast<doublereal*>(&factr),
+            reinterpret_cast<doublereal*>(&pgtol),
+            reinterpret_cast<doublereal*>(wa),
+            reinterpret_cast<integer*>(iwa),
+            task, &iprint_, csave, lsave,
+            reinterpret_cast<integer*>(isave),
+            reinterpret_cast<doublereal*>(dsave),
+            N_TASK, N_CSAVE
         );
     }
 
@@ -153,7 +171,7 @@ namespace lbfgsb {
             std::vector<int> iwa;
             char task[N_TASK];
             char csave[N_CSAVE];
-            bool lsave[N_LSAVE];
+            logical lsave[N_LSAVE];
             int isave[N_ISAVE];
             double dsave[N_DSAVE];
 
